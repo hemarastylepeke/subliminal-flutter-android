@@ -21,7 +21,6 @@ class _MusicState extends State<Music> {
   }
 
   void _playAudio() async {
-    // Replace 'assets/sample_audio.mp3' with the path to your audio file
     await _audioPlayer.play(AssetSource('sample_audio.mp3'));
   }
 
