@@ -45,6 +45,7 @@ flutter:
     - assets/selfeggio_852_trimmed.wav
     - assets/selfeggio_963_trimmed.wav
     - assets/bonus_432Hz_trimmed.mp3
+    - assets/3rd_eye_development.jpeg
 
 flutter_launcher_icons:
   android: "launcher_icon"

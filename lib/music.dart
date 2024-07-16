@@ -48,27 +48,45 @@ class _MusicState extends State<Music> {
   }
 
   Widget _buildAudioList(List<Map<String, dynamic>> audioFiles) {
-    return ListView.builder(
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10.0,
+        mainAxisSpacing: 10.0,
+      ),
       itemCount: audioFiles.length,
       itemBuilder: (context, index) {
         final audio = audioFiles[index];
-        return ListTile(
-          title: Text(audio['title']),
-          subtitle: Text(audio['description']),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AudioDetailsPage(audio: audio),
+              ),
+            );
+          },
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              IconButton(
-                icon: const Icon(Icons.play_arrow),
-                onPressed: () => _playAudio(audio['path']),
+              Image.asset(
+                'assets/3rd_eye_development.jpeg',
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
               ),
-              IconButton(
-                icon: const Icon(Icons.pause),
-                onPressed: _pauseAudio,
-              ),
-              IconButton(
-                icon: const Icon(Icons.stop),
-                onPressed: _stopAudio,
+              Positioned(
+                bottom: 10.0,
+                left: 10.0,
+                right: 10.0,
+                child: Text(
+                  audio['title'],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
@@ -120,6 +138,53 @@ class _MusicState extends State<Music> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AudioDetailsPage extends StatelessWidget {
+  final Map<String, dynamic> audio;
+
+  const AudioDetailsPage({Key? key, required this.audio}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(audio['title']),
+        backgroundColor: primaryColor,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              audio['description'],
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18.0),
+            ),
+            SizedBox(height: 20.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.play_arrow),
+                  onPressed: () => AudioManager.instance.audioPlayer
+                      .play(AssetSource(audio['path'])),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.pause),
+                  onPressed: () => AudioManager.instance.audioPlayer.pause(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.stop),
+                  onPressed: () => AudioManager.instance.audioPlayer.stop(),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
