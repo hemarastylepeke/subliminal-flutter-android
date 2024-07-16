@@ -22,7 +22,8 @@ dependencies:
   sqflite: ^2.3.2
   restart_app: ^1.2.1
   audioplayers: ^6.0.0
-
+  path_provider: ^2.1.3
+  
 dev_dependencies:
   flutter_lints: ^1.0.0
   flutter_test:
@@ -34,7 +35,16 @@ flutter:
   assets:
     - assets/wallpaper2.jpg
     - assets/alternate_logo.png
-    - assets/sample_audio.mp3
+    - assets/selfeggio_174_trimmed.wav
+    - assets/selfeggio_396_trimmed.wav
+    - assets/selfeggio_285_trimmed.wav
+    - assets/selfeggio_285_trimmed.wav
+    - assets/selfeggio_528_trimmed.wav
+    - assets/selfeggio_639_trimmed.wav
+    - assets/selfeggio_741_trimmed.wav
+    - assets/selfeggio_852_trimmed.wav
+    - assets/selfeggio_963_trimmed.wav
+    - assets/bonus_432Hz_trimmed.mp3
 
 flutter_launcher_icons:
   android: "launcher_icon"

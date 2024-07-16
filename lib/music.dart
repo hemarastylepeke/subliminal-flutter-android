@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'audio_manager.dart'; // Import the AudioManager
+import 'audio_manager.dart';
+import 'database_helper.dart';
 
 const primaryColor = Color(0xFF00DC82);
 
@@ -13,15 +14,29 @@ class Music extends StatefulWidget {
 
 class _MusicState extends State<Music> {
   late AudioPlayer _audioPlayer;
+  List<Map<String, dynamic>> _solfeggioFrequencies = [];
+  List<Map<String, dynamic>> _bonusFrequencies = [];
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioManager.instance.audioPlayer;
+    _loadAudioFiles();
   }
 
-  void _playAudio() async {
-    await _audioPlayer.play(AssetSource('sample_audio.mp3'));
+  void _loadAudioFiles() async {
+    final dbHelper = DatabaseHelper();
+    final solfeggioFiles = await dbHelper.getSolfeggioFrequencies();
+    final bonusFiles = await dbHelper.getBonusFrequencies();
+
+    setState(() {
+      _solfeggioFrequencies = solfeggioFiles;
+      _bonusFrequencies = bonusFiles;
+    });
+  }
+
+  void _playAudio(String path) async {
+    await _audioPlayer.play(AssetSource(path));
   }
 
   void _pauseAudio() async {
@@ -30,6 +45,36 @@ class _MusicState extends State<Music> {
 
   void _stopAudio() async {
     await _audioPlayer.stop();
+  }
+
+  Widget _buildAudioList(List<Map<String, dynamic>> audioFiles) {
+    return ListView.builder(
+      itemCount: audioFiles.length,
+      itemBuilder: (context, index) {
+        final audio = audioFiles[index];
+        return ListTile(
+          title: Text(audio['title']),
+          subtitle: Text(audio['description']),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.play_arrow),
+                onPressed: () => _playAudio(audio['path']),
+              ),
+              IconButton(
+                icon: const Icon(Icons.pause),
+                onPressed: _pauseAudio,
+              ),
+              IconButton(
+                icon: const Icon(Icons.stop),
+                onPressed: _stopAudio,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -68,20 +113,9 @@ class _MusicState extends State<Music> {
           ),
           Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  onPressed: _playAudio,
-                  child: const Text('Play Audio'),
-                ),
-                ElevatedButton(
-                  onPressed: _pauseAudio,
-                  child: const Text('Pause Audio'),
-                ),
-                ElevatedButton(
-                  onPressed: _stopAudio,
-                  child: const Text('Stop Audio'),
-                ),
+                Expanded(child: _buildAudioList(_solfeggioFrequencies)),
+                Expanded(child: _buildAudioList(_bonusFrequencies)),
               ],
             ),
           ),
