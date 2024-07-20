@@ -173,40 +173,72 @@ class AudioDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(audio['title']),
-        backgroundColor: primaryColor,
+        iconTheme: const IconThemeData(
+          color: primaryColor, // Change the back button color
+        ),
+        title: Text(
+          audio['title'],
+          style: const TextStyle(
+            color: primaryColor, // Change the title color
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              audio['description'],
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18.0),
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/wallpaper2.jpg'),
+                fit: BoxFit.cover,
+              ),
             ),
-            const SizedBox(height: 20.0),
-            Row(
+          ),
+          Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.play_arrow),
-                  onPressed: () => AudioManager.instance.audioPlayer
-                      .play(AssetSource(audio['path'])),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    audio['description'],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white, // Change the description text color
+                    ),
+                  ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.pause),
-                  onPressed: () => AudioManager.instance.audioPlayer.pause(),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.stop),
-                  onPressed: () => AudioManager.instance.audioPlayer.stop(),
+                const SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.play_arrow),
+                      color: primaryColor,
+                      onPressed: () => AudioManager.instance.audioPlayer
+                          .play(AssetSource(audio['path'])),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.pause),
+                      color: primaryColor,
+                      onPressed: () =>
+                          AudioManager.instance.audioPlayer.pause(),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.stop),
+                      color: primaryColor,
+                      onPressed: () => AudioManager.instance.audioPlayer.stop(),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
