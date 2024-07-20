@@ -19,7 +19,6 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'messages.db');
     return await openDatabase(
       path,
-      // Since the database schema version is 1, we can increment the version number in order to migrate the new changes for instance if we create a new column.
       version: 1,
       onCreate: (db, version) async {
         // Create message categories database
@@ -32,7 +31,7 @@ class DatabaseHelper {
           "CREATE TABLE messages(id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, category_id INTEGER, is_favorite BOOLEAN NOT NULL CHECK (is_favorite IN (0, 1)) DEFAULT 0, FOREIGN KEY(category_id) REFERENCES categories(id))",
         );
 
-        // Create thee speech settings table
+        // Create the speech settings table
         await db.execute(
           "CREATE TABLE speech_settings(id INTEGER PRIMARY KEY, volume REAL, rate REAL, pitch REAL, language TEXT)",
         );
@@ -52,14 +51,15 @@ class DatabaseHelper {
     );
   }
 
-  // Function to create selfeggio table
+  // Function to create solfeggio table
   Future<void> _createSolfeggioFrequenciesTable(Database db) async {
     await db.execute('''
       CREATE TABLE solfeggio_frequencies (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         description TEXT,
-        path TEXT
+        path TEXT,
+        image_path TEXT
       )
     ''');
 
@@ -69,6 +69,7 @@ class DatabaseHelper {
       'description':
           '174 Hz frequency is helpful for pain relief and for reducing inflammation in the body. It helps to alleviate pain and promote healing.',
       'path': 'selfeggio_174_trimmed.wav',
+      'image_path': 'assets/3rd_eye_development.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
@@ -76,6 +77,7 @@ class DatabaseHelper {
       'description':
           '396 Hz helps with liberation and freedom. It is thought to be helpful for releasing feelings of guilt and fear, and for bringing about a sense of change and transformation.',
       'path': 'selfeggio_396_trimmed.wav',
+      'image_path': 'assets/accept_critisism.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
@@ -83,13 +85,15 @@ class DatabaseHelper {
       'description':
           '285 Hz is helpful for tissue and cell regeneration and also said to promote healing, it has been associated with the power of transforming negative emotions and thoughts into positive ones.',
       'path': 'selfeggio_285_trimmed.wav',
+      'image_path': 'assets/accelerated_learning.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Trauma Healing',
       'description':
           '417 Hz frequency helps with facilitation and support. It is thought to be helpful for facilitating change and supporting the process of healing and self-improvement.',
-      'path': 'selfeggio_285_trimmed.wav',
+      'path': 'selfeggio_417_trimmed.wav',
+      'image_path': 'assets/Insomnia.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
@@ -97,6 +101,7 @@ class DatabaseHelper {
       'description':
           '528 Hz frequency is helpful for repairing DNA and bringing about a sense of transformation and miracles.',
       'path': 'selfeggio_528_trimmed.wav',
+      'image_path': 'assets/accept_myself.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
@@ -104,6 +109,7 @@ class DatabaseHelper {
       'description':
           '639 Hz frequency sound helps with connection and relationships. It is thought to be helpful for bringing about a sense of harmony and balance in personal relationships.',
       'path': 'selfeggio_639_trimmed.wav',
+      'image_path': 'assets/anti_stress.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
@@ -111,6 +117,7 @@ class DatabaseHelper {
       'description':
           '741 Hz frequency is helpful for awakening intuition and inner wisdom. It is believed to be helpful for enhancing problem-solving and decision-making abilities.',
       'path': 'selfeggio_741_trimmed.wav',
+      'image_path': 'assets/dealing_with_pain.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
@@ -118,6 +125,7 @@ class DatabaseHelper {
       'description':
           '852 Hz frequency helps with returning to spiritual order. Specifically with bringing about a sense of connection to a higher power and for opening up spiritual communication.',
       'path': 'selfeggio_852_trimmed.wav',
+      'image_path': 'assets/forgiveness.jpeg'
     });
 
     await db.insert('solfeggio_frequencies', {
@@ -125,6 +133,7 @@ class DatabaseHelper {
       'description':
           'The 963 Hz frequency, also known as the “god frequency,” can help to stimulate a connection with the Crown Chakra, which can help you understand yourself and the world around you on a deeper level.',
       'path': 'selfeggio_963_trimmed.wav',
+      'image_path': 'assets/fatigue.jpg'
     });
   }
 
@@ -135,7 +144,8 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         description TEXT,
-        path TEXT
+        path TEXT,
+        image_path TEXT
       )
     ''');
 
@@ -145,6 +155,7 @@ class DatabaseHelper {
       'description':
           'The 432 Hz frequency is more than just a harmonic pitch. It is a tool that can help reduce stress, promote relaxation, expand consciousness and create a deeper connection to nature and the universe.',
       'path': 'bonus_432Hz_trimmed.mp3',
+      'image_path': 'assets/cure_emotional_pain.jpg'
     });
   }
 

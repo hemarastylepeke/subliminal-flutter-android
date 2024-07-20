@@ -4,6 +4,7 @@ import 'audio_manager.dart';
 import 'database_helper.dart';
 
 const primaryColor = Color(0xFF00DC82);
+const borderColor = Color(0xFF0f172a);
 
 class Music extends StatefulWidget {
   const Music({Key? key}) : super(key: key);
@@ -35,24 +36,14 @@ class _MusicState extends State<Music> {
     });
   }
 
-  void _playAudio(String path) async {
-    await _audioPlayer.play(AssetSource(path));
-  }
-
-  void _pauseAudio() async {
-    await _audioPlayer.pause();
-  }
-
-  void _stopAudio() async {
-    await _audioPlayer.stop();
-  }
-
-  Widget _buildAudioList(List<Map<String, dynamic>> audioFiles) {
+  Widget _buildAudioGrid(List<Map<String, dynamic>> audioFiles) {
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 16.0,
+        mainAxisSpacing: 16.0,
       ),
       itemCount: audioFiles.length,
       itemBuilder: (context, index) {
@@ -66,29 +57,38 @@ class _MusicState extends State<Music> {
               ),
             );
           },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Image.asset(
-                'assets/3rd_eye_development.jpeg',
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-              ),
-              Positioned(
-                bottom: 10.0,
-                left: 10.0,
-                right: 10.0,
-                child: Text(
-                  audio['title'],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: borderColor),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset(
+                    audio['image_path'],
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: 10.0,
+                  left: 10.0,
+                  right: 10.0,
+                  child: Text(
+                    audio['title'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -130,10 +130,32 @@ class _MusicState extends State<Music> {
             ),
           ),
           Center(
-            child: Column(
+            child: ListView(
               children: [
-                Expanded(child: _buildAudioList(_solfeggioFrequencies)),
-                Expanded(child: _buildAudioList(_bonusFrequencies)),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Solfeggio Frequencies',
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                _buildAudioGrid(_solfeggioFrequencies),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Bonus Frequencies',
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                _buildAudioGrid(_bonusFrequencies),
               ],
             ),
           ),
@@ -162,9 +184,9 @@ class AudioDetailsPage extends StatelessWidget {
             Text(
               audio['description'],
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18.0),
+              style: const TextStyle(fontSize: 18.0),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
