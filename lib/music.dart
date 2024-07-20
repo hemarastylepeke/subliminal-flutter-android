@@ -165,10 +165,28 @@ class _MusicState extends State<Music> {
   }
 }
 
-class AudioDetailsPage extends StatelessWidget {
+class AudioDetailsPage extends StatefulWidget {
   final Map<String, dynamic> audio;
 
   const AudioDetailsPage({Key? key, required this.audio}) : super(key: key);
+
+  @override
+  _AudioDetailsPageState createState() => _AudioDetailsPageState();
+}
+
+class _AudioDetailsPageState extends State<AudioDetailsPage> {
+  AudioPlayer get _audioPlayer => AudioManager.instance.audioPlayer;
+  bool _isPlaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer.onPlayerStateChanged.listen((state) {
+      setState(() {
+        _isPlaying = state == PlayerState.playing;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +197,7 @@ class AudioDetailsPage extends StatelessWidget {
           color: primaryColor, // Change the back button color
         ),
         title: Text(
-          audio['title'],
+          widget.audio['title'],
           style: const TextStyle(
             color: primaryColor, // Change the title color
           ),
@@ -204,36 +222,80 @@ class AudioDetailsPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    audio['description'],
+                    widget.audio['description'],
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 18.0,
-                      color: Colors.white, // Change the description text color
+                      color: Colors.white,
                     ),
                   ),
                 ),
                 const SizedBox(height: 20.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.play_arrow),
-                      color: primaryColor,
-                      onPressed: () => AudioManager.instance.audioPlayer
-                          .play(AssetSource(audio['path'])),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.pause),
-                      color: primaryColor,
-                      onPressed: () =>
-                          AudioManager.instance.audioPlayer.pause(),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.stop),
-                      color: primaryColor,
-                      onPressed: () => AudioManager.instance.audioPlayer.stop(),
-                    ),
-                  ],
+                  children: _isPlaying
+                      ? [
+                          Container(
+                            padding: const EdgeInsets.all(6.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF431407)
+                                  .withOpacity(0.5), // Background color
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF9A3412), // Border color
+                                width: 1.0, // Border width
+                              ),
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.pause),
+                              color: Colors.white, // Play button icon color
+                              iconSize:
+                                  40.0, // Increase the size of the play icon
+                              onPressed: () => _audioPlayer.pause(),
+                              tooltip: 'Pause',
+                            ),
+                          ),
+                          const SizedBox(width: 16.0),
+                          Container(
+                            padding: const EdgeInsets.all(6.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF431407)
+                                  .withOpacity(0.5), // Background color
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF9A3412), // Border color
+                                width: 1.0, // Border width
+                              ),
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.stop),
+                              color: Colors.pink, // Play button icon color
+                              iconSize:
+                                  40.0, // Increase the size of the play icon
+                              onPressed: () => _audioPlayer.stop(),
+                              tooltip: 'Stop',
+                            ),
+                          ),
+                        ]
+                      : [
+                          Container(
+                            padding: const EdgeInsets.all(6.0),
+                            decoration: BoxDecoration(
+                              color: primaryColor
+                                  .withOpacity(0.1), // Background color
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.play_arrow),
+                              color: Colors.white, // Play button icon color
+                              iconSize:
+                                  40.0, // Increase the size of the play icon
+                              onPressed: () => _audioPlayer
+                                  .play(AssetSource(widget.audio['path'])),
+                              tooltip: 'Play',
+                            ),
+                          ),
+                        ],
                 ),
               ],
             ),
