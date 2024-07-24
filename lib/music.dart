@@ -213,7 +213,8 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                   padding: const EdgeInsets.only(
                       top: kToolbarHeight), // Adjust padding for the tab bar
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0)
+                        .copyWith(bottom: 80.0),
                     children: [
                       const Padding(
                         padding: EdgeInsets.only(top: 90.0, bottom: 16),
@@ -223,6 +224,22 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                             color: primaryColor,
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // Description Container
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        margin: const EdgeInsets.only(bottom: 16.0),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 22, 22, 22),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'Solfeggio frequencies are a set of frequencies that are believed to have healing properties when listened to through music or on its own.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
                           ),
                         ),
                       ),
@@ -238,15 +255,32 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                           ),
                         ),
                       ),
+                      // Description Container
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        margin: const EdgeInsets.only(bottom: 16.0),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 22, 22, 22),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'Our Bonus frequencies can be used to enhance the effectiveness of the subliminal messages. These frequencies are designed to influence brain activity or physiological responses in ways that complement the intended messages.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ),
                       _buildAudioList(_bonusFrequencies),
                     ],
                   ),
                 ),
               ],
             ),
+
             // Generate Beats Tab
             Stack(
-              fit: StackFit.expand, // Ensure Stack covers the entire screen
+              fit: StackFit.expand,
               children: [
                 Container(
                   decoration: const BoxDecoration(
@@ -256,16 +290,23 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(
+                Padding(
+                  padding: const EdgeInsets.only(
                       top: kToolbarHeight), // Adjust padding for the tab bar
                   child: Center(
-                    child: Text(
-                      'Generate Beats',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 22, 22, 22),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'Generate Beats',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
