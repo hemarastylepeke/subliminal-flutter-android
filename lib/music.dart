@@ -85,7 +85,7 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
         int index = entry.key;
         Map<String, dynamic> audio = entry.value;
         return Container(
-          margin: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(5.0),
           decoration: BoxDecoration(
             border: Border.all(color: borderColor),
             borderRadius: BorderRadius.circular(10),
