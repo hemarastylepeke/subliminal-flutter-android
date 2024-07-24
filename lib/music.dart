@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:accordion/accordion.dart';
 import 'audio_manager.dart';
 import 'database_helper.dart';
 
 const primaryColor = Color(0xFF00DC82);
 const borderColor = Color(0xFF0f172a);
+const dropdownBackgroundColor = Color(0xFF1e293b);
 
 class Music extends StatefulWidget {
   const Music({Key? key}) : super(key: key);
@@ -13,16 +15,28 @@ class Music extends StatefulWidget {
   _MusicState createState() => _MusicState();
 }
 
-class _MusicState extends State<Music> {
+class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
   late AudioPlayer _audioPlayer;
   List<Map<String, dynamic>> _solfeggioFrequencies = [];
   List<Map<String, dynamic>> _bonusFrequencies = [];
+  int? _playingIndex;
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioManager.instance.audioPlayer;
     _loadAudioFiles();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   void _loadAudioFiles() async {
@@ -36,62 +50,113 @@ class _MusicState extends State<Music> {
     });
   }
 
-  Widget _buildAudioGrid(List<Map<String, dynamic>> audioFiles) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
+  void _togglePlayPause(String path, int index) async {
+    if (_playingIndex == index) {
+      await _audioPlayer.pause();
+      setState(() {
+        _playingIndex = null;
+      });
+    } else {
+      await _audioPlayer.play(AssetSource(path));
+      setState(() {
+        _playingIndex = index;
+      });
+    }
+  }
+
+  Widget _buildAnimatedWave() {
+    return ScaleTransition(
+      scale: _animationController,
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: primaryColor,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: const Icon(Icons.bar_chart, color: Colors.white),
       ),
-      itemCount: audioFiles.length,
-      itemBuilder: (context, index) {
-        final audio = audioFiles[index];
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AudioDetailsPage(audio: audio),
-              ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: borderColor),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    audio['image_path'],
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  bottom: 10.0,
-                  left: 10.0,
-                  right: 10.0,
-                  child: Text(
-                    audio['title'],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
+    );
+  }
+
+  Widget _buildAudioList(List<Map<String, dynamic>> audioFiles) {
+    return Column(
+      children: audioFiles.asMap().entries.map((entry) {
+        int index = entry.key;
+        Map<String, dynamic> audio = entry.value;
+        return Container(
+          margin: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            children: [
+              Accordion(
+                maxOpenSections: 1,
+                headerBackgroundColor: borderColor,
+                headerPadding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+                children: [
+                  AccordionSection(
+                    isOpen: false,
+                    header: Text(audio['title'],
+                        style: const TextStyle(color: Colors.white)),
+                    content: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(audio['description'],
+                          style: const TextStyle(color: Colors.white)),
+                    ),
+                    contentBackgroundColor: dropdownBackgroundColor,
+                    rightIcon: const Icon(
+                      Icons.arrow_drop_down_outlined,
+                      color: primaryColor,
+                      size: 35,
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              Row(
+                children: [
+                  // Buttons Container
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            _playingIndex == index
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            size: 30,
+                            color: primaryColor,
+                          ),
+                          onPressed: () =>
+                              _togglePlayPause(audio['path'], index),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.stop,
+                              size: 30, color: Colors.red),
+                          onPressed: () {
+                            _audioPlayer.stop();
+                            setState(() {
+                              _playingIndex = null;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Animated Wave Container
+                  _playingIndex == index
+                      ? _buildAnimatedWave()
+                      : Container(width: 50, height: 50),
+                ],
+              ),
+            ],
           ),
         );
-      },
+      }).toList(),
     );
   }
 
@@ -129,11 +194,16 @@ class _MusicState extends State<Music> {
               ),
             ),
           ),
-          Center(
+          Padding(
+            padding: const EdgeInsets.only(
+                top: 80.0, bottom: 80.0), // Adjust top and bottom padding
             child: ListView(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0), // Add horizontal padding
               children: [
                 const Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.symmetric(
+                      vertical: 8.0), // Adjust vertical padding
                   child: Text(
                     'Solfeggio Frequencies',
                     style: TextStyle(
@@ -143,9 +213,10 @@ class _MusicState extends State<Music> {
                     ),
                   ),
                 ),
-                _buildAudioGrid(_solfeggioFrequencies),
+                _buildAudioList(_solfeggioFrequencies),
                 const Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.symmetric(
+                      vertical: 8.0), // Adjust vertical padding
                   child: Text(
                     'Bonus Frequencies',
                     style: TextStyle(
@@ -155,148 +226,7 @@ class _MusicState extends State<Music> {
                     ),
                   ),
                 ),
-                _buildAudioGrid(_bonusFrequencies),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class AudioDetailsPage extends StatefulWidget {
-  final Map<String, dynamic> audio;
-
-  const AudioDetailsPage({Key? key, required this.audio}) : super(key: key);
-
-  @override
-  _AudioDetailsPageState createState() => _AudioDetailsPageState();
-}
-
-class _AudioDetailsPageState extends State<AudioDetailsPage> {
-  AudioPlayer get _audioPlayer => AudioManager.instance.audioPlayer;
-  bool _isPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      setState(() {
-        _isPlaying = state == PlayerState.playing;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        iconTheme: const IconThemeData(
-          color: primaryColor, // Change the back button color
-        ),
-        title: Text(
-          widget.audio['title'],
-          style: const TextStyle(
-            color: primaryColor, // Change the title color
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/wallpaper2.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    widget.audio['description'],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: _isPlaying
-                      ? [
-                          Container(
-                            padding: const EdgeInsets.all(6.0),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF431407)
-                                  .withOpacity(0.5), // Background color
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFF9A3412), // Border color
-                                width: 1.0, // Border width
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.pause),
-                              color: Colors.white, // Play button icon color
-                              iconSize:
-                                  40.0, // Increase the size of the play icon
-                              onPressed: () => _audioPlayer.pause(),
-                              tooltip: 'Pause',
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Container(
-                            padding: const EdgeInsets.all(6.0),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF431407)
-                                  .withOpacity(0.5), // Background color
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFF9A3412), // Border color
-                                width: 1.0, // Border width
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.stop),
-                              color: Colors.pink, // Play button icon color
-                              iconSize:
-                                  40.0, // Increase the size of the play icon
-                              onPressed: () => _audioPlayer.stop(),
-                              tooltip: 'Stop',
-                            ),
-                          ),
-                        ]
-                      : [
-                          Container(
-                            padding: const EdgeInsets.all(6.0),
-                            decoration: BoxDecoration(
-                              color: primaryColor
-                                  .withOpacity(0.1), // Background color
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.play_arrow),
-                              color: Colors.white, // Play button icon color
-                              iconSize:
-                                  40.0, // Increase the size of the play icon
-                              onPressed: () => _audioPlayer
-                                  .play(AssetSource(widget.audio['path'])),
-                              tooltip: 'Play',
-                            ),
-                          ),
-                        ],
-                ),
+                _buildAudioList(_bonusFrequencies),
               ],
             ),
           ),

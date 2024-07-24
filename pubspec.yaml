@@ -23,6 +23,7 @@ dependencies:
   restart_app: ^1.2.1
   audioplayers: ^6.0.0
   path_provider: ^2.1.3
+  accordion: ^2.6.0
   
 dev_dependencies:
   flutter_lints: ^1.0.0
@@ -45,16 +46,6 @@ flutter:
     - assets/selfeggio_852_trimmed.wav
     - assets/selfeggio_963_trimmed.wav
     - assets/bonus_432Hz_trimmed.mp3
-    - assets/3rd_eye_development.jpeg
-    - assets/accelerated_learning.jpeg
-    - assets/accept_critisism.jpeg
-    - assets/Insomnia.jpeg
-    - assets/accept_myself.jpeg
-    - assets/anti_stress.jpeg
-    - assets/dealing_with_pain.jpeg
-    - assets/forgiveness.jpeg
-    - assets/fatigue.jpg
-    - assets/cure_emotional_pain.jpg
 
 flutter_launcher_icons:
   android: "launcher_icon"

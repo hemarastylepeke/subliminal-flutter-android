@@ -58,8 +58,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         description TEXT,
-        path TEXT,
-        image_path TEXT
+        path TEXT
       )
     ''');
 
@@ -68,72 +67,63 @@ class DatabaseHelper {
       'title': 'Physical pain relief & stress relief.',
       'description':
           '174 Hz frequency is helpful for pain relief and for reducing inflammation in the body. It helps to alleviate pain and promote healing.',
-      'path': 'selfeggio_174_trimmed.wav',
-      'image_path': 'assets/3rd_eye_development.jpeg'
+      'path': 'selfeggio_174_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Guilt & Fear diminishment',
       'description':
           '396 Hz helps with liberation and freedom. It is thought to be helpful for releasing feelings of guilt and fear, and for bringing about a sense of change and transformation.',
-      'path': 'selfeggio_396_trimmed.wav',
-      'image_path': 'assets/accept_critisism.jpeg'
+      'path': 'selfeggio_396_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Tissue restoration & Healing',
       'description':
           '285 Hz is helpful for tissue and cell regeneration and also said to promote healing, it has been associated with the power of transforming negative emotions and thoughts into positive ones.',
-      'path': 'selfeggio_285_trimmed.wav',
-      'image_path': 'assets/accelerated_learning.jpeg'
+      'path': 'selfeggio_285_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Trauma Healing',
       'description':
           '417 Hz frequency helps with facilitation and support. It is thought to be helpful for facilitating change and supporting the process of healing and self-improvement.',
-      'path': 'selfeggio_417_trimmed.wav',
-      'image_path': 'assets/Insomnia.jpeg'
+      'path': 'selfeggio_417_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Relaxation & Sleep improvement',
       'description':
           '528 Hz frequency is helpful for repairing DNA and bringing about a sense of transformation and miracles.',
-      'path': 'selfeggio_528_trimmed.wav',
-      'image_path': 'assets/accept_myself.jpeg'
+      'path': 'selfeggio_528_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Improvement in mental balance',
       'description':
           '639 Hz frequency sound helps with connection and relationships. It is thought to be helpful for bringing about a sense of harmony and balance in personal relationships.',
-      'path': 'selfeggio_639_trimmed.wav',
-      'image_path': 'assets/anti_stress.jpeg'
+      'path': 'selfeggio_639_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Detoxification of body & mind',
       'description':
           '741 Hz frequency is helpful for awakening intuition and inner wisdom. It is believed to be helpful for enhancing problem-solving and decision-making abilities.',
-      'path': 'selfeggio_741_trimmed.wav',
-      'image_path': 'assets/dealing_with_pain.jpeg'
+      'path': 'selfeggio_741_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Nervousness & Anxiety relief.',
       'description':
           '852 Hz frequency helps with returning to spiritual order. Specifically with bringing about a sense of connection to a higher power and for opening up spiritual communication.',
-      'path': 'selfeggio_852_trimmed.wav',
-      'image_path': 'assets/forgiveness.jpeg'
+      'path': 'selfeggio_852_trimmed.wav'
     });
 
     await db.insert('solfeggio_frequencies', {
       'title': 'Increased positive energy & clarity.',
       'description':
           'The 963 Hz frequency, also known as the “god frequency,” can help to stimulate a connection with the Crown Chakra, which can help you understand yourself and the world around you on a deeper level.',
-      'path': 'selfeggio_963_trimmed.wav',
-      'image_path': 'assets/fatigue.jpg'
+      'path': 'selfeggio_963_trimmed.wav'
     });
   }
 
@@ -144,8 +134,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         description TEXT,
-        path TEXT,
-        image_path TEXT
+        path TEXT
       )
     ''');
 
@@ -154,8 +143,7 @@ class DatabaseHelper {
       'title': 'Expand consciousness & reduce stress',
       'description':
           'The 432 Hz frequency is more than just a harmonic pitch. It is a tool that can help reduce stress, promote relaxation, expand consciousness and create a deeper connection to nature and the universe.',
-      'path': 'bonus_432Hz_trimmed.mp3',
-      'image_path': 'assets/cure_emotional_pain.jpg'
+      'path': 'bonus_432Hz_trimmed.mp3'
     });
   }
 
