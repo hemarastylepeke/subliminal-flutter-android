@@ -162,75 +162,118 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/alternate_logo.png',
-              width: 40,
-              height: 40,
-            ),
-            const SizedBox(width: 200),
-            const Text(
-              'Music',
-              style: TextStyle(
-                color: primaryColor,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/alternate_logo.png',
+                width: 40,
+                height: 40,
               ),
+              const SizedBox(width: 200),
+              const Text(
+                'Music',
+                style: TextStyle(
+                  color: primaryColor,
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Frequencies'),
+              Tab(text: 'Generate Beats'),
+            ],
+            indicatorColor: primaryColor,
+            labelColor: primaryColor,
+            unselectedLabelColor: Colors.white,
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // Frequencies Tab
+            Stack(
+              fit: StackFit.expand, // Ensure Stack covers the entire screen
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/wallpaper2.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: kToolbarHeight), // Adjust padding for the tab bar
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 90.0, bottom: 16),
+                        child: Text(
+                          'Solfeggio Frequencies',
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      _buildAudioList(_solfeggioFrequencies),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16.0, bottom: 16),
+                        child: Text(
+                          'Bonus Frequencies',
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      _buildAudioList(_bonusFrequencies),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            // Generate Beats Tab
+            Stack(
+              fit: StackFit.expand, // Ensure Stack covers the entire screen
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/wallpaper2.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(
+                      top: kToolbarHeight), // Adjust padding for the tab bar
+                  child: Center(
+                    child: Text(
+                      'Generate Beats',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/wallpaper2.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                top: 80.0, bottom: 80.0), // Adjust top and bottom padding
-            child: ListView(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0), // Add horizontal padding
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 8.0), // Adjust vertical padding
-                  child: Text(
-                    'Solfeggio Frequencies',
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                _buildAudioList(_solfeggioFrequencies),
-                const Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 8.0), // Adjust vertical padding
-                  child: Text(
-                    'Bonus Frequencies',
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                _buildAudioList(_bonusFrequencies),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
