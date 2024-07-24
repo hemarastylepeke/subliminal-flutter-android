@@ -150,7 +150,7 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                   // Animated Wave Container
                   _playingIndex == index
                       ? _buildAnimatedWave()
-                      : Container(width: 50, height: 50),
+                      : const SizedBox(width: 50, height: 50),
                 ],
               ),
             ],
