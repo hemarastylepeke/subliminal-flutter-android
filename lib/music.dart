@@ -3,6 +3,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:accordion/accordion.dart';
 import 'audio_manager.dart';
 import 'database_helper.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:typed_data';
+import 'dart:math';
+import 'dart:io';
 
 const primaryColor = Color(0xFF00DC82);
 const borderColor = Color(0xFF0f172a);
@@ -21,6 +25,9 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> _bonusFrequencies = [];
   int? _playingIndex;
   late AnimationController _animationController;
+  TextEditingController _leftFreqController = TextEditingController();
+  TextEditingController _rightFreqController = TextEditingController();
+  bool _isGenerating = false;
 
   @override
   void initState() {
@@ -36,6 +43,8 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     _animationController.dispose();
+    _leftFreqController.dispose();
+    _rightFreqController.dispose();
     super.dispose();
   }
 
@@ -48,6 +57,62 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
       _solfeggioFrequencies = solfeggioFiles;
       _bonusFrequencies = bonusFiles;
     });
+  }
+
+  Future<void> _generateAndPlayBeats() async {
+    final int sampleRate = 44100; // Standard sample rate
+    final int duration = 10; // Duration in seconds
+    final int numSamples = sampleRate * duration;
+
+    double frequencyLeft = double.tryParse(_leftFreqController.text) ?? 440.0;
+    double frequencyRight = double.tryParse(_rightFreqController.text) ?? 445.0;
+
+    // Generate PCM data for both channels
+    Uint8List leftChannel =
+        generateSineWave(numSamples, sampleRate, frequencyLeft);
+    Uint8List rightChannel =
+        generateSineWave(numSamples, sampleRate, frequencyRight);
+
+    // Combine channels into a single audio buffer
+    Uint8List combinedBuffer = combineChannels(leftChannel, rightChannel);
+
+    // Save PCM data to a temporary file and play it
+    final file = await _writeToFile(combinedBuffer);
+    await _audioPlayer.play(DeviceFileSource(file.path));
+    setState(() {
+      _isGenerating = true;
+    });
+  }
+
+  Uint8List generateSineWave(int numSamples, int sampleRate, double frequency) {
+    Uint8List buffer =
+        Uint8List(numSamples * 2); // 2 bytes per sample (16-bit audio)
+    for (int i = 0; i < numSamples; i++) {
+      double t = i / sampleRate;
+      int sample = (32767.0 * sin(2.0 * pi * frequency * t)).toInt();
+      buffer[2 * i] = sample & 0xFF; // LSB
+      buffer[2 * i + 1] = (sample >> 8) & 0xFF; // MSB
+    }
+    return buffer;
+  }
+
+  Uint8List combineChannels(Uint8List leftChannel, Uint8List rightChannel) {
+    assert(leftChannel.length == rightChannel.length);
+    Uint8List combinedBuffer = Uint8List(leftChannel.length * 2);
+    for (int i = 0; i < leftChannel.length / 2; i++) {
+      combinedBuffer[4 * i] = leftChannel[2 * i];
+      combinedBuffer[4 * i + 1] = leftChannel[2 * i + 1];
+      combinedBuffer[4 * i + 2] = rightChannel[2 * i];
+      combinedBuffer[4 * i + 3] = rightChannel[2 * i + 1];
+    }
+    return combinedBuffer;
+  }
+
+  Future<File> _writeToFile(Uint8List data) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/binaural_beats.pcm');
+    await file.writeAsBytes(data);
+    return file;
   }
 
   void _togglePlayPause(String path, int index) async {
@@ -163,7 +228,7 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -176,7 +241,7 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
               ),
               const SizedBox(width: 200),
               const Text(
-                'Music',
+                'Sounds',
                 style: TextStyle(
                   color: primaryColor,
                 ),
@@ -188,7 +253,8 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Frequencies'),
-              Tab(text: 'Generate Beats'),
+              Tab(text: 'Beats'),
+              Tab(text: 'Music'),
             ],
             indicatorColor: primaryColor,
             labelColor: primaryColor,
@@ -278,7 +344,7 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
               ],
             ),
 
-            // Generate Beats Tab
+            // Generate Binaural Beats Tab
             Stack(
               fit: StackFit.expand,
               children: [
@@ -291,8 +357,7 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      top: kToolbarHeight), // Adjust padding for the tab bar
+                  padding: const EdgeInsets.only(top: kToolbarHeight),
                   child: Center(
                     child: Container(
                       padding: const EdgeInsets.all(16.0),
@@ -300,13 +365,88 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                         color: const Color.fromARGB(255, 22, 22, 22),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Text(
-                        'Generate Beats',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Generate Binaural Beats',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: _leftFreqController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Left Ear Frequency (Hz)',
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: _rightFreqController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Right Ear Frequency (Hz)',
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed:
+                                _isGenerating ? null : _generateAndPlayBeats,
+                            child: Text(_isGenerating
+                                ? 'Generating...'
+                                : 'Generate and Play'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Music tab
+            Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/wallpaper2.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: kToolbarHeight),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 22, 22, 22),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Music will go here',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
