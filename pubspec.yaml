@@ -46,6 +46,11 @@ flutter:
     - assets/selfeggio_852_trimmed.wav
     - assets/selfeggio_963_trimmed.wav
     - assets/bonus_432Hz_trimmed.mp3
+    - assets/alpha.png
+    - assets/beta.png
+    - assets/delta.png
+    - assets/gamma.png
+    - assets/theta.png
 
 flutter_launcher_icons:
   android: "launcher_icon"

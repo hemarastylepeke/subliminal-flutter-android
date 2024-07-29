@@ -25,8 +25,8 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> _bonusFrequencies = [];
   int? _playingIndex;
   late AnimationController _animationController;
-  TextEditingController _leftFreqController = TextEditingController();
-  TextEditingController _rightFreqController = TextEditingController();
+  final TextEditingController _leftFreqController = TextEditingController();
+  final TextEditingController _rightFreqController = TextEditingController();
   bool _isGenerating = false;
 
   @override
@@ -60,9 +60,9 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _generateAndPlayBeats() async {
-    final int sampleRate = 44100; // Standard sample rate
-    final int duration = 10; // Duration in seconds
-    final int numSamples = sampleRate * duration;
+    const int sampleRate = 44100; // Standard sample rate
+    const int duration = 10; // Duration in seconds
+    const int numSamples = sampleRate * duration;
 
     double frequencyLeft = double.tryParse(_leftFreqController.text) ?? 440.0;
     double frequencyRight = double.tryParse(_rightFreqController.text) ?? 445.0;
@@ -357,58 +357,248 @@ class _MusicState extends State<Music> with SingleTickerProviderStateMixin {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: kToolbarHeight),
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 22, 22, 22),
-                        borderRadius: BorderRadius.circular(10),
+                  padding: const EdgeInsets.only(top: kToolbarHeight + 48.0),
+                  child: ListView(
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(
+                            top: 16.0), // Adjust the top padding as needed
+                        child: Text(
+                          'Binaural Beats Description.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                      Accordion(
+                        maxOpenSections: 1,
+                        headerBackgroundColor: borderColor,
+                        headerPadding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 15),
                         children: [
-                          const Text(
-                            'Generate Binaural Beats',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
+                          // 1
+                          AccordionSection(
+                            isOpen: false,
+                            header: Row(
+                              children: [
+                                const Text(
+                                  "0.1 Hz | 4 Hz - DELTA",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                const SizedBox(width: 20.0),
+                                Image.asset(
+                                  'assets/delta.png',
+                                  width: 80.0,
+                                  height: 28.0,
+                                ),
+                              ],
+                            ),
+                            content: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Delta Binaural Beats are mostly efficient for Deep sleep, Pain relief, Anti-aging, and Healing. Usually, Delta frequencies are generated within the range of 0.1Hz and 4Hz.",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            contentBackgroundColor: dropdownBackgroundColor,
+                            rightIcon: const Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: primaryColor,
+                              size: 35,
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          TextField(
-                            controller: _leftFreqController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Left Ear Frequency (Hz)',
-                              filled: true,
-                              fillColor: Colors.white,
+
+                          // 2
+                          AccordionSection(
+                            isOpen: false,
+                            header: Row(
+                              children: [
+                                const Text(
+                                  "4 Hz | 8 Hz - THETA",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                const SizedBox(width: 20.0),
+                                Image.asset(
+                                  'assets/theta.png',
+                                  width: 80.0,
+                                  height: 28.0,
+                                ),
+                              ],
                             ),
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                          const SizedBox(height: 20),
-                          TextField(
-                            controller: _rightFreqController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Right Ear Frequency (Hz)',
-                              filled: true,
-                              fillColor: Colors.white,
+                            content: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Theta Binaural Beats are mostly efficient for REM Sleep, Deep relaxation, Meditation and creativity. Theta frequencies are generated within the range of 4Hz and 8Hz.",
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-                            style: const TextStyle(color: Colors.black),
+                            contentBackgroundColor: dropdownBackgroundColor,
+                            rightIcon: const Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: primaryColor,
+                              size: 35,
+                            ),
                           ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed:
-                                _isGenerating ? null : _generateAndPlayBeats,
-                            child: Text(_isGenerating
-                                ? 'Generating...'
-                                : 'Generate and Play'),
+
+                          // 3
+                          AccordionSection(
+                            isOpen: false,
+                            header: Row(
+                              children: [
+                                const Text(
+                                  "8 Hz | 13 Hz - ALPHA",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                const SizedBox(width: 20.0),
+                                Image.asset(
+                                  'assets/alpha.png',
+                                  width: 80.0,
+                                  height: 28.0,
+                                ),
+                              ],
+                            ),
+                            content: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Alpha Binaural Beats are mostly efficient for Relaxed focus, Stress reduction, Positive thinking and Fast learning. Alpha frequencies are generated within the range of 8Hz and 13Hz.",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            contentBackgroundColor: dropdownBackgroundColor,
+                            rightIcon: const Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: primaryColor,
+                              size: 35,
+                            ),
+                          ),
+
+                          // 4
+                          AccordionSection(
+                            isOpen: false,
+                            header: Row(
+                              children: [
+                                const Text(
+                                  "13 Hz | 30 Hz - BETA",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                const SizedBox(width: 20.0),
+                                Image.asset(
+                                  'assets/beta.png',
+                                  width: 80.0,
+                                  height: 28.0,
+                                ),
+                              ],
+                            ),
+                            content: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Beta Binaural Beats are mostly efficient for Focused attention, Cognitive thinking, Problem solving & being active. Beta frequencies are generated within the range of 13Hz and 30Hz.",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            contentBackgroundColor: dropdownBackgroundColor,
+                            rightIcon: const Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: primaryColor,
+                              size: 35,
+                            ),
+                          ),
+
+                          // 5
+                          AccordionSection(
+                            isOpen: false,
+                            header: Row(
+                              children: [
+                                const Text(
+                                  "30 Hz & Above - GAMMA",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                const SizedBox(width: 20.0),
+                                Image.asset(
+                                  'assets/gamma.png',
+                                  width: 80.0,
+                                  height: 28.0,
+                                ),
+                              ],
+                            ),
+                            content: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Gamma Binaural Beats are mostly efficient for High level cognition, Memory recall and Peak awareness. Gamma frequencies are generated within the range of 30Hz and above.",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            contentBackgroundColor: dropdownBackgroundColor,
+                            rightIcon: const Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: primaryColor,
+                              size: 35,
+                            ),
                           ),
                         ],
                       ),
-                    ),
+                      const SizedBox(
+                          height:
+                              16), // Add spacing between accordion and the generate Binaural Beat text
+                      const Padding(
+                        padding: EdgeInsets.only(
+                            top: 0.0,
+                            bottom: 16.0), // Adjust the top padding as needed
+                        child: Text(
+                          'Generate Binaural Beat.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 22, 22, 22),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 20),
+                            TextField(
+                              controller: _leftFreqController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: 'Left Ear Frequency (Hz)',
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            const SizedBox(height: 20),
+                            TextField(
+                              controller: _rightFreqController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: 'Right Ear Frequency (Hz)',
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed:
+                                  _isGenerating ? null : _generateAndPlayBeats,
+                              child: Text(_isGenerating
+                                  ? 'Generating...'
+                                  : 'Generate and Play'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

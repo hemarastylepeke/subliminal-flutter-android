@@ -146,8 +146,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
             .speak(messages[_currentMessageIndex]); // Speak the current message
       });
 
-      // Hide the message after 2 seconds TO DO: Modify it later
-      _hideTimer = Timer(const Duration(seconds: 2), () {
+      // Hide the message after 30 milliseconds
+      _hideTimer = Timer(const Duration(milliseconds: 150), () {
         setState(() {
           _showMessage = false;
         });
